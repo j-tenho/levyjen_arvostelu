@@ -49,9 +49,8 @@ def login_test():
     password_hash = db.query(sql, [username])[0][0]
 
     if check_password_hash(password_hash, password):
-        print("Toimii 1")
         session["username"] = username
-        print("Toimii 2")
+        session["user_id"] = db.query("SELECT id FROM users WHERE username = ?",[username])[0][0]
         return redirect("/")
 
     return render_template("message.html", message = "VIRHE: väärä tunnus tai salasana")
@@ -59,5 +58,54 @@ def login_test():
 @app.route("/logout")
 def logout():
     del session["username"]
+    del session["user_id"]
     return redirect("/")
 
+@app.route("/add_review")
+def add_review():
+    return render_template("add_review.html")
+
+@app.route("/add_review_to_db", methods =["POST"])
+def add_review_to_db():
+    artist = request.form["artist"]
+    year = int(request.form["year"])
+    album = request.form["album"]
+    genre = request.form["genre"]
+    rating = request.form["rating"]
+
+    try:
+       sql = "SELECT id FROM artists WHERE name = ?"
+       artist_id = int(db.query(sql, [artist])[0][0])
+    
+    
+    except:
+        sql = "INSERT INTO artists (name) VALUES (?)"
+        db.execute(sql, [artist])
+        sql = "SELECT id FROM artists WHERE name = ?"    
+        artist_id = int(db.query(sql, [artist])[0][0])
+
+    try:
+        sql = "SELECT id FROM albums WHERE name = ?"
+        album_id = int(db.query(sql, [album])[0][0])
+
+    except:
+        sql = "INSERT INTO albums (name, artist, year, genre) VALUES (?, ?, ?, ?)"  
+        db.execute(sql, [album, artist_id, year, genre])
+        sql = "SELECT id FROM albums WHERE name = ?"
+        album_id = int(db.query(sql, [album])[0][0])
+
+    try:
+        sql = "SELECT id FROM reviews WHERE user = ? AND album = ?"
+        review_id = int(db.query(sql,[session["user_id"],album_id])[0][0])
+        sql = "UPDATE reviews SET rating = ? WHERE id  = ?"
+        db.execute(sql,[rating, review_id])
+        updated = "Edellinen arviosi on päivitetty. "
+
+    except:
+        updated = ""
+        sql = "INSERT INTO reviews (user, album, rating) VALUES (?, ?, ?)"
+        db.execute(sql, [session["user_id"], album_id, rating])
+
+    message = f"{updated}Arvioit artistin {artist} albumin {album} arvosanalla {rating}."
+
+    return render_template("message.html", message = message)

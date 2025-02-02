@@ -1,3 +1,9 @@
 {% extends "layout.html" %}
 
-
+{% block content %}
+  {% if session.username %}
+    <p>
+      <a href="/add_review">Arvioi albumi tai päivitä edellinen arvio</a>
+    </p>
+  {% endif %}
+{% endblock %}
