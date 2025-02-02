@@ -30,8 +30,6 @@ def index():
     for row in reviews_data: 
         reviews += f"{row[0]:<25} {row[1]:<25} {row[2]:<20} {row[3]:<8} {row[4]:<10}\n"
 
-    print(reviews)
-
     return render_template("index.html", reviews=reviews.split("\n"))
 
 @app.route("/register")
@@ -131,3 +129,69 @@ def add_review_to_db():
     message = f"{updated}Arvioit artistin {artist} albumin {album} arvosanalla {rating}."
 
     return render_template("message.html", message = message)
+
+@app.route("/search")
+def search():
+    return render_template("search.html")
+
+@app.route("/search_db", methods =["POST"])
+def search_data():
+    search_type = request.form["search_type"]
+    search_variable = request.form["search_variable"]
+    approved_types = ["artists.name","albums.genre","albums.name"]
+
+    print(search_variable)
+
+    if search_type in approved_types:
+	
+        sql = f""" SELECT
+        artists.name as artist,
+        albums.name as album,
+        albums.genre as genre,
+        albums.year as year, 
+        AVG(rating) as average_rating
+        FROM reviews
+        JOIN albums ON reviews.album = albums.id
+        JOIN artists ON albums.artist = artists.id
+        WHERE {search_type} = ?
+        GROUP BY artist, album, genre, year
+        ORDER BY average_rating DESC;"""    
+
+        print(sql)
+
+        averages_data = db.query(sql, [search_variable])
+
+        averages  = f"{'Artisti':<25} {'Albumi':<25} {'Genre':<20} {'Vuosi':<8} {'Arvioiden keskiarvo':<10}\n"
+        
+        for row in averages_data:
+            averages += f"{row[0]:<25} {row[1]:<25} {row[2]:<20} {row[3]:<8} {row[4]:<10}\n"
+
+        averages += "\n\n"
+
+        sql = f""" SELECT
+        artists.name,
+        albums.name,
+        albums.genre,
+        albums.year,
+        rating,
+        users.username
+        FROM reviews
+        JOIN albums ON reviews.album = albums.id
+        JOIN artists ON albums.artist = artists.id
+        JOIN users ON reviews.user = users.id
+        WHERE {search_type}  = ?;"""
+
+        reviews_data = db.query(sql, [search_variable])
+        
+        reviews  = f"{'Artisti':<25} {'Albumi':<25} {'Genre':<20} {'Vuosi':<8} {'Arvio':<10} {'Käyttäjä':<15}\n"
+    
+        for row in reviews_data:
+            reviews += f"{row[0]:<25} {row[1]:<25} {row[2]:<20} {row[3]:<8} {row[4]:<10} {row[5]:<15}\n"
+    
+        reviews += "\n\n"
+    
+        print(averages)
+        print(reviews)
+
+        return render_template("/search_results.html",averages = averages.split("\n"), reviews = reviews.split("\n"))
+

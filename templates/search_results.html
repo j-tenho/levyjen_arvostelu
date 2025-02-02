@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+<html>
+
+{% block content %}
+<body>
+
+  <h2>Löydetyt albumit</h2>
+
+  <pre>
+    {% for row in averages %}
+      {{ row }}
+    {% endfor %}
+  </pre>
+
+  <h2>Kaikki arviot</h2>
+
+  <pre>
+    {% for row in reviews %}
+      {{ row }}
+    {% endfor %}
+  </pre>
+
+
+</body>
+{% endblock %}
+
+</html>
