@@ -14,11 +14,21 @@
       <ul>
         <li><a href="/">Etusivu</a></li>
         <li><a href="/search">Haku</a></li>
-        <li><a href="/register">Luo tunnus</a></li>
-        <li><a href="/login">Kirjaudu sisään</a></li>
+        {% if session.username %}
+          <li><a href="/logout">Kirjaudu ulos</a></li>
+        {% else %}
+          <li><a href="/register">Luo tunnus</a></li>
+          <li><a href="/login">Kirjaudu sisään</a></li>
+        {% endif %}
       </ul>
     </nav>
   </div>
+
+  {% if session.username %}
+  <p>
+    Olet kirjautunut nimellä {{ session.username }}
+  </p>
+  {% endif %}
 
   <div class="content">
     {% block content %}

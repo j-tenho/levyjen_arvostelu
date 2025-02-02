@@ -55,3 +55,9 @@ def login_test():
         return redirect("/")
 
     return render_template("message.html", message = "VIRHE: väärä tunnus tai salasana")
+
+@app.route("/logout")
+def logout():
+    del session["username"]
+    return redirect("/")
+
