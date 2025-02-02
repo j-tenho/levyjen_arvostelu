@@ -1,10 +1,12 @@
 import sqlite3
 from flask import Flask
-from flask import render_template, request
-from werkzeug.security import generate_password_hash
+from flask import render_template, request, redirect, session
+from werkzeug.security import generate_password_hash, check_password_hash
+import config
 import db
 
 app = Flask(__name__)
+app.secret_key = config.secret_key
 
 @app.route("/")
 def index():
@@ -16,7 +18,7 @@ def register():
 
 @app.route("/create", methods=["POST"])
 def create():
-    next_page = "create.html"
+    next_page = "message.html"
     username = request.form["username"]
     password1 = request.form["password1"]
     password2 = request.form["password2"]
@@ -34,10 +36,22 @@ def create():
     message = request.form["username"]
     return render_template(next_page, message = "Tunnus luotu onnistuneest!")
 
-@app.route("/search")
-def search():
-    return render_template("index.html")
-
 @app.route("/login")
 def login():
-    return render_template("index.html")
+    return render_template("login.html")
+
+@app.route("/login_test",methods =["POST"]) 
+def login_test():
+    username = request.form["username"]
+    password = request.form["password"]
+
+    sql = "SELECT password_hash FROM users WHERE username = ?"
+    password_hash = db.query(sql, [username])[0][0]
+
+    if check_password_hash(password_hash, password):
+        print("Toimii 1")
+        session["username"] = username
+        print("Toimii 2")
+        return redirect("/")
+
+    return render_template("message.html", message = "VIRHE: väärä tunnus tai salasana")
