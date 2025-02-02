@@ -10,7 +10,29 @@ app.secret_key = config.secret_key
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    sql = """ SELECT 
+        artists.name,
+        albums.name,
+        albums.genre,
+        albums.year,
+        AVG(rating) as average_rating
+    FROM reviews
+    JOIN albums ON reviews.album = albums.id
+    JOIN artists ON albums.artist = artists.id
+    GROUP BY artists.name, albums.name, albums.genre, albums.year
+    ORDER BY average_rating DESC
+    LIMIT 10;"""
+
+    reviews_data = db.query(sql,[])
+
+    reviews = f"{'Artisti':<25} {'Albumi':<25} {'Genre':<20} {'Vuosi':<8} {'Arvioiden keskiarvo':<10}\n"
+
+    for row in reviews_data: 
+        reviews += f"{row[0]:<25} {row[1]:<25} {row[2]:<20} {row[3]:<8} {row[4]:<10}\n"
+
+    print(reviews)
+
+    return render_template("index.html", reviews=reviews.split("\n"))
 
 @app.route("/register")
 def register():

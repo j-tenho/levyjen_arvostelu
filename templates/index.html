@@ -5,5 +5,14 @@
     <p>
       <a href="/add_review">Arvioi albumi tai päivitä edellinen arvio</a>
     </p>
+
+  <h2>Top 10 albumit</h2>
+    
+  <pre>
+    {% for row in reviews %}
+      {{ row }}
+    {% endfor %}
+  </pre>
+
   {% endif %}
 {% endblock %}
