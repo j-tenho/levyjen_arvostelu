@@ -9,19 +9,19 @@ CREATE TABLE albums (
     artist INTEGER NOT NULL,
     year INTEGER,
     genre INTEGER,
-    FOREIGN KEY (artist) REFERENCES artists(id)
+    FOREIGN KEY (artist) REFERENCES artists(id),
     FOREIGN KEY (genre) REFERENCES genres(id)
 );
 
 CREATE TABLE genres (
     id INTEGER PRIMARY KEY,
-    name TEXT UNIQUE NOT NULL,
+    name TEXT UNIQUE NOT NULL
 );
 
 CREATE TABLE users (
     id INTEGER PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
+    password_hash TEXT NOT NULL
 );
 
 CREATE TABLE reviews (
