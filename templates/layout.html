@@ -15,6 +15,7 @@
         <li><a href="/">Etusivu</a></li>
         <li><a href="/search">Haku</a></li>
         {% if session.username %}
+          <li><a href="/profile">Oma profiili</a></li>
           <li><a href="/logout">Kirjaudu ulos</a></li>
         {% else %}
           <li><a href="/register">Luo tunnus</a></li>

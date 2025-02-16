@@ -3,30 +3,7 @@
 <body>
 {% block content %}
 
-<h2>Albumit ja arviot genressä: {{ genre_name }}</h2>
-
-<h3>Albumit</h3>
-
-    <table border="1">
-    <tr>
-        <th>Artisti</th>
-        <th>Albumi</th>
-        <th>Genre</th>
-        <th>Vuosi</th>
-        <th>Arvio</th>
-    </tr>
-    {% for row in averages %}
-    <tr>
-        <td><a href="/artist/{{ row[0] }}">{{ row[0] }}</a></td>
-        <td><a href="/album/{{ row[1] }}">{{ row[1] }}</a></td>
-        <td><a href="/genre/{{ row[2] }}">{{ row[2] }}</a></td>
-        <td><a href="/year/{{ row[3] }}">{{ row[3] }}</a></td>
-        <td><a {{ row[4] }}">{{ row[4] }}</a></td>
-    {% endfor %}
-    </tr>
-</table>
-
-<h3>Arviot</h3>
+<h2>Albumin {{ album_name }} arviot:</h2>
     
     <table border="1">
     <tr>

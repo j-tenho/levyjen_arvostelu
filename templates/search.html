@@ -3,7 +3,7 @@
 
 <body>
 {% block content %}
-  <form action="/search_db" method="post">
+  <form action="/search_results" method="post">
     <p>
       Hakutermi: <br />
       <input type="text" name="search_variable" />
@@ -11,9 +11,10 @@
 
     <p>Arvio:</p>
     <p>
-      <input type="radio" name="search_type" value="artists.name" /> Artisti
-      <input type="radio" name="search_type" value="albums.name" /> Albumi
-      <input type="radio" name="search_type" value="genres.name" /> Genre
+      <input type="radio" name="search_type" value="artist" /> Artisti
+      <input type="radio" name="search_type" value="album" /> Albumi
+      <input type="radio" name="search_type" value="genre" /> Genre
+      <input type="radio" name="search_type" value="year" /> Vuosi
     </p>
     <input type="submit" value="Etsi" />
   </form>

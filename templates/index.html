@@ -17,7 +17,7 @@
         <th>Albumi</th>
         <th>Genre</th>
         <th>Vuosi</th>
-        <th>Arvio</th>
+        <th>Arvioiden keskiarvo</th>
     </tr>
     {% for row in reviews %}
     <tr>
@@ -25,7 +25,7 @@
         <td><a href="/album/{{ row[1] }}">{{ row[1] }}</a></td>
         <td><a href="/genre/{{ row[2] }}">{{ row[2] }}</a></td>
         <td><a href="/year/{{ row[3] }}">{{ row[3] }}</a></td>
-        <td><a href="/rating/{{ row[4] }}">{{ row[4] }}</a></td>
+        <td><a {{ row[4] }}">{{ row[4] }}</a></td>
     </tr>
     {% endfor %}
 </table>
