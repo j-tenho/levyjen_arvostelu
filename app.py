@@ -1,6 +1,7 @@
+
 import sqlite3
 from flask import Flask
-from flask import render_template, request, redirect, session
+from flask import render_template, request, redirect, session, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 import config
 import db
@@ -81,6 +82,27 @@ def logout():
     del session["user_id"]
     return redirect("/")
 
+@app.route("/profile")
+def profile():
+    if session["username"]:
+
+        sql = """ SELECT
+        artists.name,
+        albums.name,
+        genres.name,
+        albums.year,
+        rating,
+        reviews.id
+        FROM reviews
+        JOIN albums ON reviews.album = albums.id
+        JOIN artists ON albums.artist = artists.id
+        JOIN users ON reviews.user = users.id
+        JOIN genres on albums.genre = genres.id
+        WHERE users.username  = ?;"""
+    
+    reviews_data = db.query(sql, [session["username"]])
+    return render_template("user.html", username=session["username"],reviews=reviews_data)
+
 @app.route("/add_review")
 def add_review():
     return render_template("add_review.html")
@@ -139,6 +161,27 @@ def add_review_to_db():
     message = f"{updated}Arvioit artistin {artist} albumin {album} arvosanalla {rating}."
 
     return render_template("message.html", message = message)
+
+@app.route("/delete_review/<review_id>")
+def delete_review(review_id):
+    sql = "DELETE FROM reviews WHERE id = ?"
+    db.execute(sql, [review_id])
+    return render_template("/message.html", message = "Arvio poistettu")
+
+@app.route("/modify_review/<review_id>")
+def form_modify_review(review_id):
+    return render_template("/update_review.html", review_id = review_id)
+
+
+@app.route("/review_updated/<review_id>", methods = ["POST"])
+def update_rating(review_id):
+    rating = request.form["rating"]
+    print(rating)
+
+    sql = "UPDATE reviews SET rating = ?  WHERE id = ?"
+    db.execute(sql, [rating, review_id])
+
+    return render_template("/message.html", message = "Arvio muutettu")
 
 @app.route("/search")
 def search():

@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+<body>
+{% block content %}
+  <form action="/review_updated/{{review_id}}" method="post">
+    <p>Arvio:</p>
+    <p>
+      <input type="radio" name="rating" value=1 /> 1
+      <input type="radio" name="rating" value=2 /> 2
+      <input type="radio" name="rating" value=3 /> 3
+      <input type="radio" name="rating" value=4 /> 4
+      <input type="radio" name="rating" value=5 /> 5
+    </p>
+    <input type="submit" value="Lähetä arvostelu" />
+  </form>
+{% endblock %}
+</body>
+
+</html>
+
+
