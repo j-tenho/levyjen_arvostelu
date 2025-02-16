@@ -168,8 +168,6 @@ def search_data():
         GROUP BY artist, album, genre, year
         ORDER BY average_rating DESC;"""    
 
-        print(sql)
-
         averages_data = db.query(sql, [search_variable])
 
         averages  = f"{'Artisti':<25} {'Albumi':<25} {'Genre':<20} {'Vuosi':<8} {'Arvioiden keskiarvo':<10}\n"
@@ -193,3 +191,110 @@ def search_data():
         
         return render_template("/search_results.html",averages = averages_data, reviews = reviews_data)
 
+@app.route("/artist/<artist_name>")
+def artist_page(artist_name):
+    sql = """ SELECT
+        artists.name as artist,
+        albums.name as album,
+        genres.name as genre,
+        albums.year as year,
+        AVG(rating) as average_rating
+        FROM reviews
+        JOIN albums ON reviews.album = albums.id
+        JOIN artists ON albums.artist = artists.id
+        JOIN genres on albums.genre = genres.id
+        WHERE artists.name = ?
+        GROUP BY artist, album, genre, year
+        ORDER BY average_rating DESC;"""
+
+    averages_data = db.query(sql, [artist_name])
+
+    sql = """ SELECT
+        artists.name,
+        albums.name,
+        genres.name,
+        albums.year,
+        rating,
+        users.username
+        FROM reviews
+        JOIN albums ON reviews.album = albums.id
+        JOIN artists ON albums.artist = artists.id
+        JOIN users ON reviews.user = users.id
+        JOIN genres on albums.genre = genres.id
+        WHERE artists.name  = ?;"""
+    
+    reviews_data = db.query(sql, [artist_name])
+
+    return render_template("artist.html", artist_name=artist_name, averages=averages_data,reviews=reviews_data)
+
+@app.route("/genre/<genre_name>")
+def genre_page(genre_name):
+    sql = """ SELECT
+        artists.name as artist,
+        albums.name as album,
+        genres.name as genre,
+        albums.year as year,
+        AVG(rating) as average_rating
+        FROM reviews
+        JOIN albums ON reviews.album = albums.id
+        JOIN artists ON albums.artist = artists.id
+        JOIN genres on albums.genre = genres.id
+        WHERE genres.name = ?
+        GROUP BY artist, album, genre, year
+        ORDER BY average_rating DESC;"""
+        
+    averages_data = db.query(sql, [genre_name])
+        
+    sql = """ SELECT
+        artists.name,
+        albums.name,
+        genres.name,
+        albums.year,
+        rating,
+        users.username
+        FROM reviews
+        JOIN albums ON reviews.album = albums.id
+        JOIN artists ON albums.artist = artists.id
+        JOIN users ON reviews.user = users.id
+        JOIN genres on albums.genre = genres.id
+        WHERE genres.name  = ?;"""
+        
+    reviews_data = db.query(sql, [genre_name])
+        
+    return render_template("genre.html", genre_name=genre_name, averages=averages_data,reviews=reviews_data)
+
+@app.route("/year/<year>")
+def year_page(year):
+    sql = """ SELECT
+        artists.name as artist,
+        albums.name as album,
+        genres.name as genre,
+        albums.year as year,
+        AVG(rating) as average_rating
+        FROM reviews  
+        JOIN albums ON reviews.album = albums.id
+        JOIN artists ON albums.artist = artists.id
+        JOIN genres on albums.genre = genres.id   
+        WHERE albums.year = ?
+        GROUP BY artist, album, genre, year
+        ORDER BY average_rating DESC;"""
+    
+    averages_data = db.query(sql, [year])
+        
+    sql = """ SELECT
+        artists.name,
+        albums.name,
+        genres.name,
+        albums.year,
+        rating,
+        users.username
+        FROM reviews
+        JOIN albums ON reviews.album = albums.id
+        JOIN artists ON albums.artist = artists.id
+        JOIN users ON reviews.user = users.id
+        JOIN genres on albums.genre = genres.id 
+        WHERE albums.year  = ?;"""
+        
+    reviews_data = db.query(sql, [year])
+        
+    return render_template("year.html", year=year, averages=averages_data,reviews=reviews_data)
