@@ -2,6 +2,7 @@
 
 <head>
   <title>{% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="/static/main.css">
 </head>
 
 <body>
@@ -13,9 +14,8 @@
     <nav>
       <ul>
         <li><a href="/">Etusivu</a></li>
-        <li><a href="/search">Haku</a></li>
         {% if session.username %}
-          <li><a href="/profile">Oma profiili</a></li>
+          <li><a href="/profile">{{session.username}}</a></li>
           <li><a href="/logout">Kirjaudu ulos</a></li>
         {% else %}
           <li><a href="/register">Luo tunnus</a></li>
@@ -25,11 +25,7 @@
     </nav>
   </div>
 
-  {% if session.username %}
-  <p>
-    Olet kirjautunut nimellä {{ session.username }}
-  </p>
-  {% endif %}
+
 
   <div class="content">
     {% block content %}
