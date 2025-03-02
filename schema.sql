@@ -35,7 +35,9 @@ CREATE TABLE reviews (
 
 CREATE TABLE comments (
     id INTEGER PRIMARY KEY,
-    review INTEGER NOT NULL, 
+    review INTEGER NOT NULL,
     comment TEXT NOT NULL,
+    commenter INTEGER NOT NULL,
     FOREIGN KEY (review) REFERENCES review(id)
+    FOREIGN KEY (commenter) REFERENCES users(id)
 );
