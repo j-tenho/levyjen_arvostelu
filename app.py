@@ -1,7 +1,7 @@
 
 import sqlite3
 from flask import Flask
-from flask import render_template, request, redirect, session
+from flask import render_template, request, redirect, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 import config
 import db
@@ -20,25 +20,29 @@ def register():
 
 @app.route("/create", methods=["POST"])
 def create():
-    next_page = "message.html"
     username = request.form["username"]
     
     if username == "":
-        return render_template(next_page, message = "VIRHE: käyttäjänimi tyhjä")
+        flash("VIRHE: käyttäjänimi tyhjä")
+        return redirect("/register")
 
     password1 = request.form["password1"]
     password2 = request.form["password2"]
     if password1 != password2 or password1 == "":
-        return render_template(next_page, message = "VIRHE: salasanat eivät ole samat tai syötit tyhjän salasanan")        
+        flash("VIRHE: salasanat eivät ole samat tai syötit tyhjän salasanan")
+        return redirect("/register")
+
     password_hash = generate_password_hash(password1)
 
     try:
         sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
         db.execute(sql, [username, password_hash])
     except sqlite3.IntegrityError:
-        return render_template(next_page, message = "VIRHE: tunnus on jo varattu")
+        flash("VIRHE: käyttäjätunnus on jo varattu.")
+        return redirect("/register")
 
-    return render_template(next_page, message = "Tunnus luotu onnistuneest!")
+    flash("Tunnus luotu onnistuneesti. Voit nyt kirjautua sisään.")
+    return redirect("/")
 
 @app.route("/login")
 def login():
@@ -50,7 +54,8 @@ def login_test():
     password = request.form["password"]
 
     if username == "":
-        return render_template("message.html", message = "Et syöttänyt käyttäjätunnusta. Yritä uudelleen.")
+        flash("Et syöttänyt käyttäjätunnusta. Yritä uudelleen.")
+        return redirect("/login")
 
     sql = "SELECT password_hash FROM users WHERE username = ?"
     password_hash = db.query(sql, [username])[0][0]
@@ -58,14 +63,17 @@ def login_test():
     if check_password_hash(password_hash, password):
         session["username"] = username
         session["user_id"] = db.query("SELECT id FROM users WHERE username = ?",[username])[0][0]
+        flash(f"Tervetuloa {username}!")
         return redirect("/")
 
-    return render_template("message.html", message = "VIRHE: väärä tunnus tai salasana")
-
+    flash("VIRHE: väärä tunnus tai salasana")
+    return redirect("/login")
+    
 @app.route("/logout")
 def logout():
     del session["username"]
     del session["user_id"]
+    flash("Uloskirjautuminen onnistui.")
     return redirect("/")
 
 @app.route("/profile/<user_name>")
@@ -83,13 +91,20 @@ def add_review():
 def add_review_to_db():
     if session["user_id"]:
         artist = request.form["artist"]
-        year = int(request.form["year"])
+        year = request.form["year"]
         album = request.form["album"]
         genre = request.form["genre"]
-        rating = request.form["rating"]
+        rating = request.form.get("rating")
 
-        if artist == "" or year == "" or album == "" or genre == "" or rating == "":
-            return render_template("add_review.html")
+        print(artist)
+        print(year)
+        print(album)
+        print(genre)
+        print(rating)
+
+        if artist == "" or year == "" or album == "" or genre == "" or rating == "" or rating is None:
+            flash("VIRHE: kenttä tai kenttiä tyhjänä")
+            return redirect("/add_review")
 
         try:
             sql = "SELECT id FROM artists WHERE name = ?"
@@ -117,7 +132,7 @@ def add_review_to_db():
 
         except:
             sql = "INSERT INTO albums (name, artist, year, genre) VALUES (?, ?, ?, ?)"  
-            db.execute(sql, [album, artist_id, year, genre_id])
+            db.execute(sql, [album, artist_id, int(year), genre_id])
             sql = "SELECT id FROM albums WHERE name = ?"
             album_id = int(db.query(sql, [album])[0][0])
 
@@ -134,8 +149,8 @@ def add_review_to_db():
             db.execute(sql, [session["user_id"], album_id, rating])
 
         message = f"{updated}Arvioit artistin {artist} albumin {album} arvosanalla {rating}."
-
-        return render_template("message.html", message = message)
+        flash(message)
+        
     
     return redirect("/")
 
@@ -172,6 +187,13 @@ def search():
 @app.route("/search_results", methods =["POST"])
 def search_data():
     search_variable = request.form["search_variable"]
+    if search_variable == "":
+        flash("VIRHE: ei hakutermiä")
+        return redirect("/search")
+    
+    if request.form.get("search_type") is None:
+        flash("VIRHE: hakutyyppiä ei valittu.")
+        return redirect("/search")
 
     if request.form["search_type"] == "artist":
         return artist_page(search_variable)
