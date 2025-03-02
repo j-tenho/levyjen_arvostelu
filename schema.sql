@@ -38,6 +38,6 @@ CREATE TABLE comments (
     review INTEGER NOT NULL,
     comment TEXT NOT NULL,
     commenter INTEGER NOT NULL,
-    FOREIGN KEY (review) REFERENCES review(id)
+    FOREIGN KEY (review) REFERENCES reviews(id)
     FOREIGN KEY (commenter) REFERENCES users(id)
 );
