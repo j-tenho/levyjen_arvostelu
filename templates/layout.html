@@ -15,7 +15,7 @@
       <ul>
         <li><a href="/">Etusivu</a></li>
         {% if session.username %}
-          <li><a href="/profile">{{session.username}}</a></li>
+          <li><a href="/profile/{{ session.username  }}">{{session.username}}</a></li>
           <li><a href="/logout">Kirjaudu ulos</a></li>
         {% else %}
           <li><a href="/register">Luo tunnus</a></li>

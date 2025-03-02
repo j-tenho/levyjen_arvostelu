@@ -19,7 +19,7 @@
         <th>Vuosi</th>
         <th>Arvioiden keskiarvo</th>
     </tr>
-    {% for row in reviews %}
+    {% for row in top_albums %}
     <tr>
         <td><a href="/artist/{{ row[0] }}">{{ row[0] }}</a></td>
         <td><a href="/album/{{ row[1] }}">{{ row[1] }}</a></td>
