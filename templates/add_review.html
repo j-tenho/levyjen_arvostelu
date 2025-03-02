@@ -5,6 +5,7 @@
 <body>
 {% block content %}
   <form action="/add_review_to_db" method="post">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <p>
       Artisti: <br />
       <input type="text" name="artist" />

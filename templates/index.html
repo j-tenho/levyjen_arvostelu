@@ -1,11 +1,13 @@
 {% extends "layout.html" %}
 
 {% block content %}
-  {% if session.username %}
     <p>
     <ul>
+      {% if session.username %}
       <li> <a href="/add_review">Arvioi albumi tai päivitä edellinen arvio</a></li>
+      {% endif %}
       <li> <a href="/search">Etsi</a></li>
+      
     </ul>
     </p>
   <h2>Top 10 albumit</h2>
@@ -31,5 +33,5 @@
 </table>
   </pre>
 
-  {% endif %}
+  
 {% endblock %}

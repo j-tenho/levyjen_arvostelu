@@ -12,9 +12,11 @@
   <h2> Käyttäjän {{ username }} arviot:</h2>
 
 {% endif %}
+<form action="/delete_review/<review_id>" method="post">
+  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+</form>
 
-
-    <table border="1">
+    <table>
     <tr>
         <th>Artisti</th>
         <th>Albumi</th>
@@ -34,8 +36,19 @@
         <td><a href="/year/{{ row[3] }}">{{ row[3] }}</a></td>
         <td> {{ row[4] }}</td>
         {% if username == session.username %}
-          <td><a href="/delete_review/{{ row[5] }}">Poista</a></td>
-          <td><a href="/modify_review/{{ row[5] }}">Muokkaa</a></td>
+        <td>
+          <form action="/delete_review/{{ row[5] }}" method="post" style="display:inline;">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+            <button type="submit" onclick="return confirm('Haluatko varmasti poistaa tämän arvion?')">Poista</button>
+          </form>
+        </td>
+
+
+          <td>
+            <form action="/modify_review/{{ row[5] }}" method="post" style="display:inline;">
+              <button type="submit">Muokkaa</button></a>
+            </form>
+          </td>
         {% endif %}
     {% endfor %}
     </tr>
