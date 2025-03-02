@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+<body>
+{% block content %}
+
+<form action="/modify_comment/" method="post">
+  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+  <input type="hidden" name="comment_id" value="{{ comment_id }}" />
+<p>Kommentti:
+   <input type="text" name="comment" value = "{{ comment[0][0] }}">
+   <input type="submit" value="Muokkaa" />
+</p>
+</body>
+</form>
+
+<form action="/delete_comment/" method="post">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+    <input type="hidden" name="comment_id" value="{{ comment_id }}" />
+    <button type="submit" onclick="return confirm('Haluatko varmasti poistaa tämän kommentin?')">Poista</button>
+</form>
+
+{% endblock %}

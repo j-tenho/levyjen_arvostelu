@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+
+<body>
+{% block content %}
+
+<h2>Arvio:</h2>
+
+    <table>
+    <tr>
+        <th>Artisti</th>
+        <th>Albumi</th>
+        <th>Genre</th>
+        <th>Vuosi</th>
+        <th>Arvio</th>
+        <th>Käyttäjä</th>
+
+    </tr>
+    {% for row in review_info %}
+    <tr>
+        <td><a href="/artist/{{ row[0] }}">{{ row[0] }}</a></td>
+        <td><a href="/album/{{ row[1] }}">{{ row[1] }}</a></td>
+        <td><a href="/genre/{{ row[2] }}">{{ row[2] }}</a></td>
+        <td><a href="/year/{{ row[3] }}">{{ row[3] }}</a></td>
+        <td> {{ row[4] }} </td>
+        <td><a href="/profile/{{ row[5] }}">{{ row[5] }}</a></td>
+    {% endfor %}
+    </tr>
+</table>
+
+{% if comments %}
+  <h2>Kommentit:</h2>
+
+  <table>
+    <tr>
+        <th>Käyttäjä</th>
+        <th>Kommentti</th>
+        {% for row in comments %}
+        <tr>
+            <td> {{ row[0] }}</td>
+            {% if row[0] == session.username %}
+              <td><a href="/comment/{{ row[2] }}">{{ row[1] }}</a></td>
+            {% else %}
+              <td> {{ row[1] }}</td>
+            {% endif %}
+        {% endfor %}
+        </tr>
+    </table>
+
+{% else %}
+
+  <h2>Ei kommentteja - vielä!</h2>
+
+  {% endif %}
+
+
+
+<form action="/add_comment" method="post">
+    <p>
+      Kommentti: <br />
+      <input type="text" name="comment"/>
+      <input type="hidden" name = review_id value ='{{ review_id }}'>
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+    </p>
+    <input type="submit" value="Lisää kommentti" />
+{% endblock %}

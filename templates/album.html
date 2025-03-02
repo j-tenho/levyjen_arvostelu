@@ -13,7 +13,7 @@
         <th>Vuosi</th>
         <th>Arvio</th>
         <th>Käyttäjä</th>
-        <th>  </th>
+        <th>   </th>
 
     </tr>
     {% for row in reviews %}
@@ -24,7 +24,7 @@
         <td><a href="/year/{{ row[3] }}">{{ row[3] }}</a></td>  
         <td> {{ row[4] }} </td>
         <td><a href="/profile/{{ row[5] }}">{{ row[5] }}</a></td>
-        <td> {{ row[6] }}</td>
+        <td><a href="/review/{{ row[6] }}">Kommentoi</a></td>
     {% endfor %}
     </tr>
 </table>

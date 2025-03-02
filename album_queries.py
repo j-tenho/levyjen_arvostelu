@@ -1,7 +1,7 @@
 import db
 
 def top_ten_albums():
-    sql = """SELECT 
+    sql = """SELECT
         artists.name,
         albums.name,
         genres.name,
@@ -14,7 +14,6 @@ def top_ten_albums():
         GROUP BY artists.name, albums.name, genres.name, albums.year
         ORDER BY average_rating DESC
         LIMIT 10;"""
-
     return db.query(sql,[])
 
 def users_reviews(username):
@@ -40,9 +39,9 @@ def return_reviewer(review_id):
         FROM reviews
         JOIN users ON reviews.user = users.id
         WHERE reviews.id  = ?;"""
-    
+
     return db.query(sql,[review_id])
-    
+
 def artists_albums(artist):
     sql = """ SELECT
         artists.name as artist,
@@ -57,7 +56,7 @@ def artists_albums(artist):
         WHERE artists.name = ?
         GROUP BY artist, album, genre, year
         ORDER BY average_rating DESC;"""
-    
+
     return db.query(sql, [artist])
 
 def artist_all_reviews(artist):
@@ -84,14 +83,15 @@ def album_all_reviews(album):
         genres.name,
         albums.year,
         rating,
-        users.username
+        users.username,
+        reviews.id
         FROM reviews
         JOIN albums ON reviews.album = albums.id
         JOIN artists ON albums.artist = artists.id
         JOIN users ON reviews.user = users.id
         JOIN genres on albums.genre = genres.id
         WHERE albums.name  = ?;"""
-    
+
     return db.query(sql, [album])
 
 
@@ -109,7 +109,7 @@ def albums_in_genre(genre):
         WHERE genres.name = ?
         GROUP BY artist, album, genre, year
         ORDER BY average_rating DESC;"""
-        
+
     return db.query(sql, [genre])
 
 def genre_reviews(genre):
@@ -126,7 +126,7 @@ def genre_reviews(genre):
         JOIN users ON reviews.user = users.id
         JOIN genres on albums.genre = genres.id
         WHERE genres.name  = ?;"""
-        
+
     return db.query(sql, [genre])
 
 def year_albums(year):
@@ -136,14 +136,14 @@ def year_albums(year):
         genres.name as genre,
         albums.year as year,
         AVG(rating) as average_rating
-        FROM reviews  
+        FROM reviews
         JOIN albums ON reviews.album = albums.id
         JOIN artists ON albums.artist = artists.id
-        JOIN genres on albums.genre = genres.id   
+        JOIN genres on albums.genre = genres.id
         WHERE albums.year = ?
         GROUP BY artist, album, genre, year
         ORDER BY average_rating DESC;"""
-    
+
     return db.query(sql, [year])
 
 
@@ -159,7 +159,51 @@ def year_reviews(year):
         JOIN albums ON reviews.album = albums.id
         JOIN artists ON albums.artist = artists.id
         JOIN users ON reviews.user = users.id
-        JOIN genres on albums.genre = genres.id 
+        JOIN genres on albums.genre = genres.id
         WHERE albums.year  = ?;"""
-        
+
     return db.query(sql, [year])
+
+def review_details(review_id):
+    sql = """ SELECT
+        artists.name,
+        albums.name,
+        genres.name,
+        albums.year,
+        rating,
+        users.username
+        FROM reviews
+        JOIN albums ON reviews.album = albums.id
+        JOIN artists ON albums.artist = artists.id
+        JOIN users ON reviews.user = users.id
+        JOIN genres on albums.genre = genres.id
+        WHERE reviews.id  = ?;"""
+
+    return db.query(sql, [review_id])
+
+def review_comments(review_id):
+    sql = """ SELECT
+        users.username,
+        comments.comment,
+        comments.id
+        FROM comments
+        JOIN users ON comments.commenter = users.id
+        WHERE comments.review = ?;"""
+
+    return db.query(sql, [review_id])
+
+def return_comment(comment_id):
+    sql = """ SELECT
+        comments.comment
+        FROM comments
+        WHERE comments.id = ?;"""
+
+    return db.query(sql, [comment_id])
+
+def return_commenter_id(comment_id):
+    sql = """ SELECT
+        comments.commenter
+        FROM comments
+        WHERE comments.id = ?;"""
+
+    return db.query(sql, [comment_id])[0]
